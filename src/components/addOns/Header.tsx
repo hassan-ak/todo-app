@@ -20,7 +20,7 @@ const Header = () => {
           >
             <AssignmentIcon />
           </IconButton>
-          <Typography variant='h5'>TaskBox</Typography>
+          <Typography variant='h5'>Todo's</Typography>
         </Toolbar>
       </AppBar>
     </div>
