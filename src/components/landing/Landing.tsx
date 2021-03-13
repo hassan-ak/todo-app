@@ -1,8 +1,12 @@
 import { Button } from "@material-ui/core";
-import React from "react";
+import React, { useEffect } from "react";
+import netlifyIdentity from "netlify-identity-widget";
 import "./landing.css";
 
 export const Landing = () => {
+  useEffect(() => {
+    netlifyIdentity.init({});
+  });
   return (
     <div className='landingContainer'>
       <div className='landingContent'>
@@ -12,7 +16,7 @@ export const Landing = () => {
         <Button
           className='landingButton'
           onClick={() => {
-            alert("clicked");
+            netlifyIdentity.open();
           }}
         >
           Login
