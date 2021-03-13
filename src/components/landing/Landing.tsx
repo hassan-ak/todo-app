@@ -7,7 +7,7 @@ import { IdentityContext } from "../../../identity-context";
 export const Landing = () => {
   const { user, identity: netlifyIdentity } = useContext(IdentityContext);
 
-  if (user === undefined) {
+  if (!user) {
     return (
       <div className='landingContainer'>
         <div className='landingContent'>
