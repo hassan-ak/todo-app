@@ -1,23 +1,13 @@
 import { Button } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
-import netlifyIdentity from "netlify-identity-widget";
+import React, { useEffect, useState, useContext } from "react";
 import "./landing.css";
 import { navigate } from "gatsby";
+import { IdentityContext } from "../../../identity-context";
 
 export const Landing = () => {
-  const [user, setUser] = useState("");
-  useEffect(() => {
-    netlifyIdentity.init({});
-  });
-  netlifyIdentity.on("login", (user) => {
-    netlifyIdentity.close();
-    setUser(user.user_metadata.full_name);
-  });
-  netlifyIdentity.on("logout", () => {
-    setUser("");
-  });
-  console.log();
-  if (user === "") {
+  const { user, identity: netlifyIdentity } = useContext(IdentityContext);
+
+  if (user === undefined) {
     return (
       <div className='landingContainer'>
         <div className='landingContent'>
@@ -39,7 +29,7 @@ export const Landing = () => {
   return (
     <div className='landingContainer'>
       <div className='landingContent'>
-        <h1>Welcome {user}!</h1>
+        <h1>Welcome {user.user_metadata.full_name}!</h1>
       </div>
       <div className='landingContent'>
         <h3>Manage your Todo's</h3>
@@ -58,7 +48,7 @@ export const Landing = () => {
         <Button
           className='landingButton'
           onClick={() => {
-            netlifyIdentity.open();
+            netlifyIdentity.logout();
           }}
         >
           LogOut
