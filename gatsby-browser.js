@@ -23,8 +23,7 @@ const authLink = setContext((_, { headers }) => {
 });
 
 const httpLink = new HttpLink({
-  uri:
-    "https://project12b-hassanalikhan.netlify.app/.netlify/functions/graphql",
+  uri: "https://project12b-hassanalikhan.netlify.app/.netlify/functions/todos",
 });
 
 // uri: "https://hassanalikhan-bc2020c39.netlify.app/.netlify/functions/graphql",
