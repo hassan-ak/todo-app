@@ -1,6 +1,7 @@
 import "./src/styles/global.css";
 import React from "react";
-import fetch from "cross-fetch";
+import netlifyIdentity from "netlify-identity-widget";
+import { setContext } from "apollo-link-context";
 import {
   ApolloProvider,
   ApolloClient,
@@ -8,11 +9,29 @@ import {
   InMemoryCache,
 } from "@apollo/client";
 import wrapRootElement from "./wrap-root-element";
+
+const authLink = setContext((_, { headers }) => {
+  const user = netlifyIdentity.currentUser();
+  const token = user.token.access_token;
+  // return the headers to the context so httpLink can read them
+  return {
+    headers: {
+      ...headers,
+      Authorization: token ? `Bearer ${token}` : "",
+    },
+  };
+});
+
+const httpLink = new HttpLink({
+  uri:
+    "https://project12b-hassanalikhan.netlify.app/.netlify/functions/graphql",
+});
+
+// uri: "https://hassanalikhan-bc2020c39.netlify.app/.netlify/functions/graphql",
+
 const client = new ApolloClient({
   cache: new InMemoryCache(),
-  link: new HttpLink({
-    uri: "/.netlify/functions/todos",
-  }),
+  link: authLink.concat(httpLink),
 });
 
 const _wrapRootElement = ({ element }) => {
