@@ -26,8 +26,6 @@ const httpLink = new HttpLink({
   uri: "https://project12b-hassanalikhan.netlify.app/.netlify/functions/todos",
 });
 
-// uri: "https://hassanalikhan-bc2020c39.netlify.app/.netlify/functions/graphql",
-
 const client = new ApolloClient({
   cache: new InMemoryCache(),
   link: authLink.concat(httpLink),
