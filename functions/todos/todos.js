@@ -1,4 +1,8 @@
 const { ApolloServer, gql } = require("apollo-server-lambda");
+const faunadb = require("faunadb");
+const q = faunadb.query;
+
+var client = new faunadb.Client({ secret: process.env.FAUNA });
 
 const typeDefs = gql`
   type Query {
@@ -15,29 +19,60 @@ const typeDefs = gql`
   }
 `;
 
-const todos = {};
-let todoIndex = 0;
 const resolvers = {
   Query: {
-    todos: (parent, args, { user }) => {
+    todos: async (parent, args, { user }) => {
       if (!user) {
         return [];
       } else {
-        return Object.values(todos);
+        const results = await client.query(
+          q.Paginate(q.Match(q.Index("todos_by_user"), user))
+        );
+        return results.data.map(([ref, text, done]) => ({
+          id: ref.id,
+          text,
+          done,
+        }));
       }
     },
   },
   Mutation: {
-    addTodo: (_, { text }) => {
-      console.log("adding");
-      todoIndex++;
-      const id = `key-${todoIndex}`;
-      todos[id] = { id, text, done: false };
-      return todos[id];
+    addTodo: async (_, { text }, { user }) => {
+      if (!user) {
+        throw new Error("Must be authenticated to insert todos");
+      }
+      const results = await client.query(
+        q.Create(q.Collection("todos"), {
+          data: {
+            text,
+            done: false,
+            owner: user,
+          },
+        })
+      );
+      return {
+        ...results.data,
+        id: results.ref.id,
+      };
     },
-    updateTodoDone: (_, { id }) => {
-      todos[id].done = !todos[id].done;
-      return todos[id];
+    updateTodoDone: async (_, { id }, { user }) => {
+      if (!user) {
+        throw new Error("Must be authenticated to insert todos");
+      }
+      const results1 = await client.query(
+        q.Get(q.Ref(q.Collection("todos"), id))
+      );
+      const results = await client.query(
+        q.Update(q.Ref(q.Collection("todos"), id), {
+          data: {
+            done: !results1.data.done,
+          },
+        })
+      );
+      return {
+        ...results.data,
+        id: results.ref.id,
+      };
     },
   },
 };

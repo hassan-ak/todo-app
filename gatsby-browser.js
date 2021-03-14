@@ -23,7 +23,7 @@ const authLink = setContext((_, { headers }) => {
 });
 
 const httpLink = new HttpLink({
-  uri: "https://project12b-hassanalikhan.netlify.app/.netlify/functions/todos",
+  uri: "https://project12c-hassanalikhan.netlify.app/.netlify/functions/todos",
 });
 
 const client = new ApolloClient({
