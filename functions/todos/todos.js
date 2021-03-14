@@ -19,11 +19,13 @@ let todoIndex = 0;
 const resolvers = {
   Query: {
     todos: () => {
+      console.log("fetching");
       return Object.values(todos);
     },
   },
   Mutation: {
     addTodo: (_, { text }) => {
+      console.log("adding");
       todoIndex++;
       const id = `key-${todoIndex}`;
       todos[id] = { id, text, done: false };
@@ -43,4 +45,9 @@ const server = new ApolloServer({
   introspection: true,
 });
 
-exports.handler = server.createHandler();
+exports.handler = server.createHandler({
+  cors: {
+    origin: "*",
+    credentials: true,
+  },
+});
